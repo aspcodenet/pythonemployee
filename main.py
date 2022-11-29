@@ -10,7 +10,8 @@ class Employee(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     namn = db.Column(db.String(80), unique=False, nullable=False)
     age = db.Column(db.Integer, unique=False, nullable=False)
-    birthdate = db.Column(db.DateTime)
+    birthdate = db.Column(db.Date)
+    #inloggningstimestamp = db.Column(db.DateTime)
 
 def Search():
     txt = input("Ange text att söka på:")
@@ -20,7 +21,7 @@ def Search():
     sel = int(input("Ange id på en som du vill uppdatera eller 0"))
     if sel == 0:
         return
-    employee = Employee.query.filter_by(id == sel).first()
+    employee = Employee.query.filter_by(id = sel).first()
     employee.namn = input("Ange nytt namn")
     employee.age = input("Ange ny age")
     db.session.commit()
