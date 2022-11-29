@@ -12,6 +12,22 @@ class Employee(db.Model):
     age = db.Column(db.Integer, unique=False, nullable=False)
     birthdate = db.Column(db.DateTime)
 
+def Search():
+    txt = input("Ange text att söka på:")
+    result = Employee.query.filter(Employee.namn.contains(txt)).all() 
+    for emp in result:
+        print(f"{emp.id} {emp.namn}")
+    sel = int(input("Ange id på en som du vill uppdatera eller 0"))
+    if sel == 0:
+        return
+    employee = Employee.query.filter_by(id == sel).first()
+    employee.namn = input("Ange nytt namn")
+    employee.age = input("Ange ny age")
+    db.session.commit()
+        
+
+
+
 def CreateNew():
     b = Employee()
     b.namn = input("Ange namn:")
@@ -29,4 +45,6 @@ with app.app_context():
         action = input("Ange val:")
         if action == "2":
             CreateNew()
+        if action == "1":
+            Search()
 
