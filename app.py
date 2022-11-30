@@ -1,9 +1,13 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate, upgrade
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:hejsan123@localhost/employee'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:stefan@localhost/employee'
 db = SQLAlchemy(app)
+db.init_app(app)
+migrate = Migrate(app,db)
+migrate.init_app(app, db)
 
 # Det vi gör är  CODE-FIRST !!!!
 class Employee(db.Model):
@@ -11,7 +15,9 @@ class Employee(db.Model):
     namn = db.Column(db.String(80), unique=False, nullable=False)
     age = db.Column(db.Integer, unique=False, nullable=False)
     birthdate = db.Column(db.Date)
-    #inloggningstimestamp = db.Column(db.DateTime)
+    city = db.Column(db.String(40), unique=False, nullable=False)
+    shoesize = db.Column(db.Integer, unique=False, nullable=False)
+   #inloggningstimestamp = db.Column(db.DateTime)
 
 def Search():
     txt = input("Ange text att söka på:")
@@ -23,7 +29,9 @@ def Search():
         return
     employee = Employee.query.filter_by(id = sel).first()
     employee.namn = input("Ange nytt namn")
-    employee.age = input("Ange ny age")
+    employee.age = int(input("Ange ny age"))
+    employee.city = input("Ange ny city:")
+    employee.shoesize = int(input("Ange ny shoesize"))
     db.session.commit()
         
 
@@ -33,19 +41,24 @@ def CreateNew():
     b = Employee()
     b.namn = input("Ange namn:")
     b.age = int(input("Ange age:"))
+    b.city = input("Ange city:")
+    b.shoesize = int(input("Ange shoesize"))
     # TODO ska fixa birthdate strax - strptime
     db.session.add(b)
     db.session.commit() 
 
-with app.app_context():
-    db.create_all()
+if __name__  == "__main__":
+    with app.app_context():
+        upgrade()
+        #db.create_all()
+        #upgrade()
 
-    while True:
-        print("1. Sök ")
-        print("2. Skapa ny ")
-        action = input("Ange val:")
-        if action == "2":
-            CreateNew()
-        if action == "1":
-            Search()
+        while True:
+            print("1. Sök ")
+            print("2. Skapa ny ")
+            action = input("Ange val:")
+            if action == "2":
+                CreateNew()
+            if action == "1":
+                Search()
 
